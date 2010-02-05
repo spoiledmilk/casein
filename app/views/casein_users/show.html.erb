@@ -1,0 +1,82 @@
+<h2>View user</h2>
+
+<% form_for :casein_user, @casein_user, :url => casein_user_path(@casein_user), :html => {:method => :put} do |form| %>
+
+	<div class="tfContainer">
+		<%= casein_text_field form, @casein_user, :login, {:size => 30} %>
+	</div>
+
+	<div class="tfContainer tfContainerSecond">
+		<%= casein_text_field form, @casein_user, :name %>
+	</div>
+
+	<div class="tfContainer">
+		<%= casein_text_field form, @casein_user, :email %>
+	</div>
+
+	<div class="tfContainer tfContainerSecond">
+		<% if @session_user.is_admin? && CaseinUser.has_more_than_one_admin %>
+			<%= casein_select form, @casein_user, :access_level, casein_get_access_level_array, {:casein_label => "Status"} %>
+		<% end %>
+	</div>
+
+	<div class="clearer"></div>
+
+	<p class="submits">
+		<a href="<%= url_for casein_users_path %>" class="cancel">Cancel</a> or
+		<%= form.submit "Save changes", :class => "update" %>
+	</p>
+<% end %>
+
+<% if @session_user.is_admin? %>
+
+	<h2>Reset password (admin action - use carefully)</h2>
+
+	<% form_for :casein_user, @casein_user, :url => {:action => :reset_password, :id => @casein_user.id}, :html => {:method => :put} do |form| %>
+
+		<div class="tfContainer">
+			<%= casein_password_field form, @casein_user, :form_password, {:casein_label => "New password"} %>
+		</div>
+		
+		<div class="tfContainer tfContainerSecond">
+			<%= casein_password_field form, @casein_user, :form_password_confirmation, {:casein_label => "Repeat password"} %>
+		</div>
+	
+		<div class="clearer"></div>
+	
+		<p class="submits">
+			<%= form.submit "Reset", :class => "update" %>
+		</p>
+		
+	<% end %>
+	
+<% elsif @session_user.id == @casein_user.id %>
+
+	<h2>Change password</h2>
+
+	<% form_for :casein_user, @casein_user, :url => {:action => :update_password, :id => @casein_user.id}, :html => {:method => :put} do |form| %>
+
+		<div class="tfContainer">
+			<p><%= label_tag :form_current_password, "Current password" %></p>
+			<p><%= password_field_tag :form_current_password, "", {:class => 'caseinTextField'} %></p>
+		</div>
+
+		<div class="tfContainer tfContainerSecond">
+		</div>
+
+		<div class="tfContainer">
+			<%= casein_password_field form, @casein_user, :form_password, {:casein_label => "New password"} %>
+		</div>
+		
+		<div class="tfContainer tfContainerSecond">
+			<%= casein_password_field form, @casein_user, :form_password_confirmation, {:casein_label => "Repeat password"} %>
+		</div>
+
+		<div class="clearer"></div>
+
+		<p class="submits">
+			<%= form.submit "Change", :class => "update" %>
+		</p>
+
+	<% end %>
+<% end %>
